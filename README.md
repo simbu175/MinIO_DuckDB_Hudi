@@ -114,8 +114,8 @@ This project is licensed under the MIT License. Acknowledgments to the teams beh
 
 
 ## Next Steps:
-1. **LakeHouse implementation**: Let me know if you'd like help create a visual diagram.
-2. **MinIO feature exploration**: Would you like to include links to official MinIO and DuckDB repos or documentation?
+1. **LakeHouse implementation**: To expand this setup to a local lakehouse platform, either through Hudi or Iceberg tables from MinIO base. And handle the computation side DuckDb
+2. **MinIO feature exploration**: Some advanced MinIO features like replication, encryption, etc. 
 
 
-##Thank you!
+## Thank you!
