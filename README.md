@@ -93,9 +93,8 @@ print(df)
 ## **Architecture**
 Here’s a high-level diagram illustrating the setup:
 
-![Architecture Diagram](D:\Personal Projects\Blogs\MinIO_DuckDB\Db model\Architecture_setup.webp)
+![Architecture Diagram](extras/Architecture_setup.webp)
 
----
 
 ## **Challenges and Solutions**
 - **Challenge**: Handling large datasets with limited memory.
@@ -113,10 +112,10 @@ Feel free to fork this repository and open pull requests for:
 ## **License**
 This project is licensed under the MIT License. Acknowledgments to the teams behind [MinIO](https://min.io) and [DuckDB](https://duckdb.org).
 
----
 
 ## Next Steps:
 1. **LakeHouse implementation**: Let me know if you'd like help create a visual diagram.
 2. **MinIO feature exploration**: Would you like to include links to official MinIO and DuckDB repos or documentation?
+
 
 ##Thank you!
