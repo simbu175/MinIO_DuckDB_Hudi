@@ -17,12 +17,12 @@ The simplicity and power of these tools make them ideal for experimentation and 
 - **Python Version**: >= 3.8
 
 ### **Required Tools**
-1. **MinIO**: A local object storage solution ([Download MinIO](https://min.io/download))
-2. **DuckDB**: A lightweight SQL analytics database ([Download DuckDB](https://duckdb.org/))
-3. **PyCharm Community Edition** (or any Python IDE)
+1. **[MinIO](https://min.io)**: A local object storage solution
+2. **[DuckDB](https://duckdb.org)**: A lightweight SQL analytics database
+3. **[PyCharm Community Edition](https://www.jetbrains.com/pycharm/download/?section=windows)**: (or any Python IDE)
 
 ### **Dependencies**
-Below are the python modules `requirements` for this project:
+Below are the python modules in my `requirements.txt` for this project:
 ```plaintext
 minio >= 7.2.10
 duckdb >= 1.1.3
@@ -35,7 +35,7 @@ polars >= 1.13.1
 ## **Setup Instructions**
 
 ### **1. Installing MinIO and DuckDB**
-- Download **MinIO** and **DuckDB** executables from their respective websites.
+- Download **[MinIO](https://dl.min.io/server/minio/release/windows-amd64/minio.exe)** and **[DuckDB](https://github.com/duckdb/duckdb/releases/download/v1.1.3/duckdb_cli-windows-amd64.zip)** executables from their respective websites.
 - Add the executables' paths to your system environment variables for easier access.
 
 ### **2. Starting MinIO Server**
@@ -52,15 +52,15 @@ cd <path/to/minio/executable>
 cd <path/to/duckdb/executable>
 ./duckdb
 ```
-This launches the DuckDB SQL interface.
+This launches the DuckDB SQL client.
 
-## **Features**
-- **Local Object Storage**: Using MinIO as a cost-effective, S3-compatible object storage solution.
+### **4. Features**
+- **Local Object Storage**: Using MinIO as S3-compatible object storage solution.
 - **Querying Efficiency**: DuckDB’s columnar storage ensures high-speed analytics.
 - **Scalability**: Easily switch between in-memory and persistent modes for DuckDB.
 - **Seamless Integration**: Perform analytical queries directly on MinIO-stored objects.
 
-## **Use Cases**
+### 5. **Use Cases**
 - **Local Data Exploration**: Analyze datasets without relying on cloud services.
 - **Prototyping Analytics Pipelines**: Test workflows locally before scaling to cloud platforms.
 - **Disaggregated Compute/Storage**: Separate storage (MinIO) and compute (DuckDB) layers to optimize resource usage.
@@ -105,12 +105,13 @@ Here’s a high-level diagram illustrating the setup:
 
 ## **Contribution Guidelines**
 Feel free to fork this repository and open pull requests for:
-- Enhancements to the workflow.
+- Enhancements to the stack.
 - Additional use cases or scripts.
 
 
 ## **License**
-This project is licensed under the MIT License. Acknowledgments to the teams behind [MinIO](https://min.io) and [DuckDB](https://duckdb.org).
+This project is licensed under the MIT License. 
+Acknowledgments to the teams behind [MinIO](https://min.io) and [DuckDB](https://duckdb.org).
 
 
 ## Next Steps:
