@@ -4,16 +4,15 @@ ATTACH 'f1_data' ;
 USE f1_data;
 
 --- CREATE SCHEMA
-DROP SCHEMA IF EXISTS raw_data;
-DROP SCHEMA IF EXISTS derived_data;
-CREATE SCHEMA raw_data;
+CREATE SCHEMA IF NOT EXISTS raw_data;
 --COMMENT ON SCHEMA raw_data IS 'this schema hosts default uncompressed raw data';
-CREATE SCHEMA derived_data;
+CREATE SCHEMA IF NOT EXISTS derived_data;
 --COMMENT ON SCHEMA derived_data IS 'this schema hosts tables that are derived from f1_data.raw_data schema';
+--currently COMMENT on schema is not yet supported within DuckDB
 
 --- LOAD persisted data on disk to memory
 USE f1_data.raw_data;
-IMPORT DATABASE 'D:\\Personal Projects\\Duckdb-Data\\derived_data';
+IMPORT DATABASE "</path/to/export-import>";
 
 USE f1_data.raw_data;
 
@@ -198,6 +197,5 @@ ORDER BY polesPerDriver DESC, constructor_name;
 --- Most laps raced
 --- Most distance covered (# of laps into race distance per lap for every circuit?)
 
---- EXPORT derived_data & raw_data to disk
-
-EXPORT DATABASE 'D:\\Personal Projects\\Duckdb-Data\\derived_data' (FORMAT PARQUET, COMPRESSION ZSTD, ROW_GROUP_SIZE 100_000);
+--- EXPORT derived_data & raw_data from memory to disk
+EXPORT DATABASE "</path/to/export-import>" (FORMAT PARQUET, COMPRESSION ZSTD, ROW_GROUP_SIZE 100_000);
