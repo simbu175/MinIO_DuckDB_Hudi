@@ -110,7 +110,7 @@ Feel free to fork this repository and open pull requests for:
 
 
 ## **License**
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License. This entire setup is inspired from this original [blog](https://blog.min.io/duckdb-and-minio-for-a-modern-data-stack/). 
 Acknowledgments to the teams behind [MinIO](https://min.io/docs/minio/linux/developers/python/API.html) and [DuckDB](https://duckdb.org/docs/sql/introduction).
 
 
