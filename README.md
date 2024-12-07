@@ -111,12 +111,12 @@ Feel free to fork this repository and open pull requests for:
 
 ## **License**
 This project is licensed under the MIT License. 
-Acknowledgments to the teams behind [MinIO](https://min.io) and [DuckDB](https://duckdb.org).
+Acknowledgments to the teams behind [MinIO](https://min.io/docs/minio/linux/developers/python/API.html) and [DuckDB](https://duckdb.org/docs/sql/introduction).
 
 
 ## Next Steps:
 1. **LakeHouse implementation**: To expand this setup to a local lakehouse platform, either through Hudi or Iceberg tables from MinIO base. And handle the computation side DuckDb
-2. **MinIO feature exploration**: Some advanced MinIO features like replication, encryption, etc. 
+2. **MinIO feature exploration**: Some advanced MinIO features like versioning, replication, encryption, catalog, observability and so on. 
 
 
 ## Thank you!

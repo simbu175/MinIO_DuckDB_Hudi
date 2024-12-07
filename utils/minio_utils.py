@@ -74,6 +74,53 @@ class MinUtils(MinIO):
         self.retention = retention
         self.legal_hold = legal_hold
 
+    def create_minio_bucket(self, bucket_name, region, object_lock=True):
+        """
+        This method is for creating buckets within MinIO storage
+        :param bucket_name: name of the bucket to be created
+        :param region: applicable for cloud storage to specify the region of the cloud
+        :param object_lock: Object locking is applicable for versioned buckets,
+        where you could write once and read many times
+        :return: None
+        """
+        try:
+            minio_logger.info(f"Going to create a MinIO bucket: {bucket_name}")
+            self.get_minio_client().make_bucket(bucket_name=bucket_name,
+                                                location=region,
+                                                object_lock=object_lock)
+
+        except Exception as e:
+            minio_except.error(f"Exception occured when creating bucket: {e}")
+
+    def list_all_buckets(self):
+        """
+        This method is to list all the buckets and return the bucket object iterator that can be
+        iterated later on for bucket name and bucket created date etc.
+        :return: Returns the bucket object iterator
+        """
+        try:
+            minio_logger.info(f"Listing all the buckets.. ")
+            buckets = self.get_minio_client().list_buckets()
+            return buckets
+
+        except Exception as e:
+            minio_except.error(f"Exception occured when listing MinIO buckets: {e}")
+
+    def delete_minio_bucket(self, bucket_name):
+        """
+        The method deletes the bucket from MinIO storage when given the bucket_name as input
+        :param bucket_name: The MinIO bucket to remove
+        :return: None
+        """
+        try:
+            minio_logger.info(f"Check if the given bucket {bucket_name} exists already?")
+            if self.get_minio_client().bucket_exists(bucket_name=bucket_name):
+                minio_logger.info(f"Proceeding to delete as it exists.. ")
+                self.get_minio_client().remove_bucket(bucket_name=bucket_name)
+
+        except Exception as e:
+            minio_except.error(f"Exception occured when removing the bucket: {e}")
+
     def write_into_minio(self, bucket_name, minio_path, local_file):
         # bucket_name, object_name, file_path, content_type=”application/octet-stream”, metadata=None, sse=None,
         # progress=None, part_size=0, num_parallel_uploads=3, tags=None, retention=None, legal_hold=False
@@ -181,14 +228,41 @@ class MinUtils(MinIO):
             minio_except.error(f"Exception occurred when listing objects: {e}")
             raise f'MinIO List object exception: {e}'
 
-    def create_minio_bucket(self):
-        pass
+    def delete_minio_object(self, bucket_name, object_name, version_id=None):
+        """
+        Method to remove the given MinIO object in the bucket
+        :param bucket_name: Bucket name in which the underlying object lives
+        :param object_name: The object under the bucket that needs deletion
+        :param version_id: Version ID, applicable only for versioned buckets
+        :return: None
+        """
+        try:
+            minio_logger.info(f"Removing the given object: {object_name}")
+            self.get_minio_client().remove_object(bucket_name=bucket_name,
+                                                  object_name=object_name,
+                                                  version_id=version_id)
 
-    def delete_minio_bucket(self):
-        pass
+        except Exception as e:
+            minio_except.error(f"Exception occurred when removing the given object: {e}")
 
-    def delete_minio_object(self):
-        pass
+    def delete_minio_objects(self, bucket_name, object_list, bypass_governance_mode=False):
+        """
+        Method to delete multiple objects for a given bucket. Ensure to give the object paths as list of
+        object_names so this can be deleted through the DeleteObject iterator
+        :param bucket_name: MinIO bucket name
+        :param object_list: List of objects inside the bucket that needs deletion with a single API call
+        :param bypass_governance_mode: False by default, to remove the s3:BypassGovernanceRetention permission
+        on the bucket so that MinIO can lift the lock automatically
+        :return: An error iterator for DeleteError object
+        """
+        try:
+            minio_logger.info(f"Deleting the objects, {object_list} from the {bucket_name} bucket")
+            errors = self.get_minio_client().remove_objects(bucket_name=bucket_name,
+                                                            delete_object_list=object_list)
+            return  errors
+
+        except Exception as e:
+            minio_except.error(f"Exception occured when removing objects: {object_list}: {e}")
 
 
 if __name__ == f"__main__":
