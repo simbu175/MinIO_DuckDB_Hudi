@@ -252,7 +252,7 @@ class MinUtils(MinIO):
         Method to delete multiple objects for a given bucket. Ensure to give the object paths as list of
         object_names so this can be deleted through the DeleteObject iterator
         :param bucket_name: MinIO bucket name
-        :param object_list: List of objects inside the bucket that needs deletion with a single API call
+        :param object_list: List of objects inside the bucket that needs deletion or a prefix that needs to be deleted
         :param bypass_governance_mode: False by default, to remove the s3:BypassGovernanceRetention permission
         on the bucket so that MinIO can lift the lock automatically
         :return: An error iterator for DeleteError object
@@ -275,8 +275,11 @@ if __name__ == f"__main__":
     # print(f" Get the minio client: {s3_obj.get_minio_client()}")
     minio_logger.info(f" Get the minio client: {s3_obj.get_minio_client()}")
 
-    output_data = s3_obj.load_file_paths(
-        local_path=bc.DATA_PATH,
-        bucket_name=bc.s3_raw_bucket,
-        minio_path=f'inputs')
-    minio_logger.info(f"\nFile status: {output_data}")
+    # output_data = s3_obj.load_file_paths(
+    #     local_path=bc.DATA_PATH,
+    #     bucket_name=bc.s3_raw_bucket,
+    #     minio_path=f'inputs')
+    # minio_logger.info(f"\nFile status: {output_data}")
+
+    obj_list = s3_obj.list_minio_objects()
+    print(f"List of objects: {obj_list}")
