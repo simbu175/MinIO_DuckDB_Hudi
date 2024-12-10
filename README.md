@@ -93,7 +93,7 @@ print(df)
 ## **Architecture**
 Here’s a high-level diagram illustrating the setup:
 
-![Architecture Diagram](extras/Architecture_setup.webp)
+![Architecture Diagram](extras/Architecture_setup_v2.webp)
 
 
 ## **Challenges and Solutions**

@@ -19,6 +19,7 @@ class MinIO:
     This class is used only for defining the MinIO host connection parameters
     and returning with a client to interact programmatically with the MinIO through its APIs
     """
+
     def __init__(self, config_section=bc.aws_config_section):
         # aws_con = configparser.ConfigParser()
         # aws_con.read(bc.AWS_CONFIG)
@@ -58,6 +59,7 @@ class MinUtils(MinIO):
     creating a bucket, removing a bucket, getting the list of buckets and objects in a bucket,
     removing an object, etc.
     """
+
     def __init__(self, config_section, target_bucket_name=None,
                  content_type=f'application/csv', metadata=None, sse=None, part_size=0,
                  num_parallel_uploads=10, tags=None, retention=None, legal_hold=None):
@@ -213,7 +215,7 @@ class MinUtils(MinIO):
         :return: The object iterator that is returned by the list_objects API
         """
         try:
-            objects = self.get_minio_client().\
+            objects = self.get_minio_client(). \
                 list_objects(bucket_name=bucket_name,
                              prefix=prefix,
                              recursive=recurse,
@@ -258,8 +260,9 @@ class MinUtils(MinIO):
         try:
             minio_logger.info(f"Deleting the objects, {object_list} from the {bucket_name} bucket")
             errors = self.get_minio_client().remove_objects(bucket_name=bucket_name,
-                                                            delete_object_list=object_list)
-            return  errors
+                                                            delete_object_list=object_list,
+                                                            bypass_governance_mode=bypass_governance_mode)
+            return errors
 
         except Exception as e:
             minio_except.error(f"Exception occured when removing objects: {object_list}: {e}")

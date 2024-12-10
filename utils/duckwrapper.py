@@ -13,6 +13,9 @@ duck_exceptions = basiclogger(logname=f'DUCK_ESSENTIALS', section=f'EXCEPTION', 
 
 
 class DuckDB:
+    """
+    This class contains the Duckdb operations that are needed when connecting through Python, with duckdb module
+    """
     def __init__(self, minio_host, minio_access_key, minio_secret_key, db_path=f":memory:"):
         self.minio_host = minio_host
         self.minio_access_key = minio_access_key

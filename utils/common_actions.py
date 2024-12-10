@@ -9,6 +9,10 @@ comm_except = basiclogger(logname=f'COMMON_ACTIONS', section=f'EXCEPTION', forma
 
 
 class CommonActions:
+    """
+    Some directory and string cleaning actions that are needed to carefully handle the MinIO requests
+    especially concerning the prefix of an object needs appropriate treatment.
+    """
     def __init__(self):
         comm_logger.info(f'Common Actions class gets initialised')
 
