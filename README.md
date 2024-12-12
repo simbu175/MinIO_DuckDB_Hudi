@@ -104,8 +104,8 @@ Here’s a high-level diagram illustrating the setup:
 
 
 ## **Contribution Guidelines**
-- Dev-v1: This branch contains the basic setup of MinIO + DuckDB.
-- Dev-v2: This futuristic branch, will have integration of lakehouse.
+- `Dev-v1`: This branch contains the basic setup of MinIO + DuckDB.
+- `Dev-v2`: This futuristic branch, will have integration of lakehouse.
 - Feel free to fork this repository and open pull requests for:
   - Enhancements to the stack.
   - Additional use cases or scripts.
