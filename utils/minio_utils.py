@@ -281,5 +281,6 @@ if __name__ == f"__main__":
     #     minio_path=f'inputs')
     # minio_logger.info(f"\nFile status: {output_data}")
 
-    obj_list = s3_obj.list_minio_objects()
-    print(f"List of objects: {obj_list}")
+    # obj_list = s3_obj.list_minio_objects()
+    objects = [f's3://{i.bucket_name}/{i.object_name}:{i.last_modified}' for i in s3_obj.list_minio_objects()]
+    print(f"List of objects: {objects}")

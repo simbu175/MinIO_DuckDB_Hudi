@@ -17,8 +17,8 @@ The simplicity and power of these tools make them ideal for experimentation and 
 - **Python Version**: >= 3.8
 
 ### **Required Tools**
-1. **[MinIO](https://min.io)**: A local object storage solution
-2. **[DuckDB](https://duckdb.org)**: A lightweight SQL analytics database
+1. **[MinIO](https://min.io)**: A local object storage solution that is similar to AWS S3
+2. **[DuckDB](https://duckdb.org)**: A lightweight, in-process SQL analytics database
 3. **[PyCharm Community Edition](https://www.jetbrains.com/pycharm/download/?section=windows)**: (or any Python IDE)
 
 ### **Dependencies**
@@ -41,24 +41,24 @@ polars >= 1.13.1
 ### **2. Starting MinIO Server**
 ```bash
 cd <path/to/minio/executable>
-./minio server /path/to/storage --console-address :9001
+./minio server /path/to/minio_console_log --console-address :9001
 ```
-- Log in to the MinIO Console at `http://localhost:9001` using:
+- Log in to the MinIO Console at `http://localhost:9001` using default login (or you can create your custom user login from the UI):
   - Username: `minioadmin`
   - Password: `minioadmin`
 
 ### **3. Starting DuckDB**
 ```bash
-cd <path/to/duckdb/executable>
+cd <path/to/duckdb_executable>
 ./duckdb
 ```
 This launches the DuckDB SQL client.
 
 ### **4. Features**
 - **Local Object Storage**: Using MinIO as S3-compatible object storage solution.
-- **Querying Efficiency**: DuckDB’s columnar storage ensures high-speed analytics.
+- **Querying Efficiency**: DuckDB’s columnar storage ensures high-speed analytics for OLAP queries.
 - **Scalability**: Easily switch between in-memory and persistent modes for DuckDB.
-- **Seamless Integration**: Perform analytical queries directly on MinIO-stored objects.
+- **Seamless Integration**: Perform analytical queries both from memory or read directly from MinIO objects.
 
 ### 5. **Use Cases**
 - **Local Data Exploration**: Analyze datasets without relying on cloud services.
@@ -104,19 +104,21 @@ Here’s a high-level diagram illustrating the setup:
 
 
 ## **Contribution Guidelines**
-Feel free to fork this repository and open pull requests for:
-- Enhancements to the stack.
-- Additional use cases or scripts.
+- Dev-v1: This branch contains the basic setup of MinIO + DuckDB.
+- Dev-v2: This futuristic branch, will have integration of lakehouse.
+- Feel free to fork this repository and open pull requests for:
+  - Enhancements to the stack.
+  - Additional use cases or scripts.
 
 
 ## **License**
-This project is licensed under the MIT License. This entire setup is inspired from this original [blog](https://blog.min.io/duckdb-and-minio-for-a-modern-data-stack/). 
+This project is licensed under the MIT/Apache License. This entire setup is inspired from this original [blog](https://blog.min.io/duckdb-and-minio-for-a-modern-data-stack/). 
 Acknowledgments to the teams behind [MinIO](https://min.io/docs/minio/linux/developers/python/API.html) and [DuckDB](https://duckdb.org/docs/sql/introduction).
 
 
 ## Next Steps:
-1. **LakeHouse implementation**: To expand this setup to a local lakehouse platform, either through Hudi or Iceberg tables from MinIO base. And handle the computation side DuckDb
-2. **MinIO feature exploration**: Some advanced MinIO features like versioning, replication, encryption, catalog, observability and so on. 
+1. **LakeHouse implementation**: To expand this setup to a local lakehouse, (Hudi or Iceberg) from MinIO and DuckDB.
+2. **MinIO feature exploration**: Some advanced MinIO features like versioning, replication, encryption, catalog, observability etc. 
 
 
 ## Thank you!

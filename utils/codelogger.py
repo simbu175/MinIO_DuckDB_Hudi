@@ -11,7 +11,7 @@ LEVELS = {f'DEBUG': logging.DEBUG,
           f'CRITICAL': logging.CRITICAL
           }
 
-LOGCONFIGFILE = bc.BASE_PATH + f"/config/logger.config"
+LOGCONFIGFILE = bc.BASE_PATH + f"/config/default_logger.config"
 LOG_PATH = bc.BASE_PATH + f"/logs"
 
 
