@@ -1,0 +1,12 @@
+{
+    "raw_data_bucket": "s3://raw-dataset/bikeshare/",
+    "table_base_path": "s3://compressed-zone/hudi-tables/",
+    "tables": {
+        "bikeshare": {
+            "primary_key": "ride_id",
+            "precombine_key": "started_at",
+            "partition_fields": ["year", "month", "day"],
+            "table_type": "MERGE_ON_READ"
+        }
+    }
+}

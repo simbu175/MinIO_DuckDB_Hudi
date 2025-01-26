@@ -11,8 +11,8 @@ LEVELS = {f'DEBUG': logging.DEBUG,
           f'CRITICAL': logging.CRITICAL
           }
 
-LOGCONFIGFILE = bc.BASE_PATH + f"/config/logger.config"
-LOG_PATH = bc.BASE_PATH + f"/logs"
+LOGCONFIGFILE = bc.LOGGER_FILE
+LOG_PATH = bc.LOGFOLDEFR
 
 
 # LOGCONFIGFILE = f"D:\\Initial_Version\\Lake_Ingestion_Codes\\config\\logger.config"

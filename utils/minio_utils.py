@@ -2,6 +2,7 @@
 # import configparser
 import os
 import glob
+import re
 
 # from urllib.parse import urlparse
 from minio import Minio
@@ -19,6 +20,7 @@ class MinIO:
     This class is used only for defining the MinIO host connection parameters
     and returning with a client to interact programmatically with the MinIO through its APIs
     """
+
     def __init__(self, config_section=bc.aws_config_section):
         # aws_con = configparser.ConfigParser()
         # aws_con.read(bc.AWS_CONFIG)
@@ -58,6 +60,7 @@ class MinUtils(MinIO):
     creating a bucket, removing a bucket, getting the list of buckets and objects in a bucket,
     removing an object, etc.
     """
+
     def __init__(self, config_section, target_bucket_name=None,
                  content_type=f'application/csv', metadata=None, sse=None, part_size=0,
                  num_parallel_uploads=10, tags=None, retention=None, legal_hold=None):
@@ -166,26 +169,128 @@ class MinUtils(MinIO):
         :return: The object iterator that is returned by the list_objects API
         """
         try:
-            objects = self.get_minio_client().\
-                list_objects(bucket_name=bucket_name,
-                             prefix=prefix,
-                             recursive=recurse,
-                             start_after=start_after,
-                             include_user_meta=include_user_meta_data,
-                             include_version=include_version)
+            objs = self.get_minio_client().list_objects(bucket_name=bucket_name,
+                                                           prefix=prefix,
+                                                           recursive=recurse,
+                                                           start_after=start_after,
+                                                           include_user_meta=include_user_meta_data,
+                                                           include_version=include_version)
             # objects -> iterator of the type
-            minio_logger.info(f'Successfully retrieved the objects: {objects}')
-            return objects
+            minio_logger.info(f'Successfully retrieved the objects: {objs}')
+            return objs
 
         except Exception as e:
             minio_except.error(f"Exception occurred when listing objects: {e}")
             raise f'MinIO List object exception: {e}'
 
-    def create_minio_bucket(self):
-        pass
+    def is_empty_object(self, bucket_name=bc.s3_raw_bucket, obj_name=None,  # ssec=None,
+                        # version_id=None, extra_headers=None, extra_query_params=None
+                        ):
+        """
+        This method is used to check if an object/prefix exists in MinIO. If an exception is raised,
+        then it means the object doesn't exist in MinIO. For an existing object, it lists the metadata of the object.
+        :param bucket_name: Name of the bucket
+        :param obj_name: Prefix/key in the bucket that needs to be checked for emptiness
+        :return: True or False, based on the existence of the object in the MinIO bucket
+        """
+        try:
+            minio_logger.info(f"Searching for the key: {obj_name} in bucket: {bucket_name}")
+            obj = self.list_minio_objects(bucket_name=bucket_name, prefix=obj_name, recurse=False)
+            for _ in obj:
+                minio_logger.info(f"A file exists in the key shared: {_.object_name}. Hence its not empty")
+                return True
+            return False
 
-    def delete_minio_bucket(self):
-        pass
+        except Exception as e:
+            print(f"Exception: {e}")
+            minio_except.error(f"The {obj_name} doesn't exist in the MinIO bucket {bucket_name}")
+            return False
+
+    @staticmethod
+    def is_valid_bucket_name(b_name):
+        """
+        Checks the given string is a valid bucket name as per the standards below.
+        1. Length of the bucket name - between 3 and 63
+        2. Can contain only lower case characters, numbers, periods (.) and dashes (-)
+        3. Can not contain "_" in the name, or end with a (-) and have double periods (..)
+        and dashes adjacent to periods (.-)
+        4. Name can not be in the IP address form
+        :param b_name: name of the bucket to do the validations. Return true only if the above criteria passes
+        :return: Returns the validation status of the given name for a bucket name considerations
+        """
+        try:
+            val_result = f"Failed!"
+            # Rule 1: Check for the length of the bucket name
+            if not 3 < len(b_name) < 63:
+                val_result += f"\nBucket name must be between 3 and 63 characters."
+
+            # Rule 2: Valid character check - lowercase, numbers, periods, dashes
+            if not re.match(r'^[a-z0-9.-]+$', b_name):
+                val_result += f"\nBucket name should contain only lowercase, numbers, periods (.), dashes (-)"
+
+            # Rule 3: Invalid patterns to block
+            if "_" in b_name:
+                val_result += f"\nBucket name cannot contain underscore (_)"
+            if b_name.endswith("-"):
+                val_result += f"\nBucket name cannot end with dash (-)"
+            if ".." in b_name:
+                val_result += f"\nBucket name cannot contain double periods (..)"
+            if ".-" in b_name or "-." in b_name:
+                val_result += f"\nBucket name cannot have dashes and periods next to each other"
+
+            # Rule 4: Can not be in IP address format
+            ip_pattern = r"^(\d{1,3}\.){3}\d{1,3}$"
+            if re.match(ip_pattern, b_name):
+                val_result += f"\nBucket name cannot be in IP address format"
+
+            val_result = "Success" if val_result == f"Failed!" else val_result
+            minio_logger.info(f"Validation result: {val_result}")
+            return val_result
+
+        except Exception as e:
+            minio_except.error(f"Exception occured when validating the bucket name: {e}")
+            return False
+
+    def create_minio_bucket(self, bucket_name, region=bc.s3_default_region, obj_lock=True):
+        """
+        This method is used to create a new MinIO bucket, for the region specified. Default region otherwise
+        :param obj_lock: Flag to set the object-lock feature
+        :param region: Default region: us-east-1, if not specified otherwise
+        :param bucket_name: Name for the bucket to be created already
+        :return: String, usually a success message or a warning/failure text
+        """
+        try:
+            minio_logger.info(f"Check if the bucket: {bucket_name} already exists before creating a new one")
+            if self.get_minio_client().bucket_exists(bucket_name=bucket_name):
+                minio_logger.info(f"The bucket - {bucket_name} already exists in MinIO so not creating this again!!")
+                return f"Bucket {bucket_name} already exists in {bc.s3_default_region} location"
+
+            else:
+                if self.is_valid_bucket_name(b_name=bucket_name) == f"Success":
+                    min_bucket = self.get_minio_client().make_bucket(bucket_name=bucket_name, location=region,
+                                                                     object_lock=obj_lock)
+                    minio_logger.info(f"The bucket {bucket_name} is successfully created !!")
+                    return min_bucket
+                else:
+                    return "Invalid bucket name!"
+
+        except Exception as e:
+            minio_except.error(f"An exception occured when creating the bucket: {e}")
+
+    def delete_minio_bucket(self, bucket_name, ):
+        """
+        Method to remove an existing bucket. Checks if the bucket is already existing and then proceeds to remove.
+        :param bucket_name: Name of the bucket to remove
+        :return: Bool: True or False
+        """
+        try:
+            if self.get_minio_client().bucket_exists(bucket_name=bucket_name):
+                self.get_minio_client().remove_bucket(bucket_name=bucket_name)
+                minio_logger.info(f"Bucket - {bucket_name} successfully removed")
+            else:
+                minio_logger.info(f"Bucket - {bucket_name} doesn't exist in MinIO")
+        except Exception as e:
+            minio_except.error(f"An exception occured when deleting the minio bucket: {e}")
 
     def delete_minio_object(self):
         pass
@@ -198,8 +303,23 @@ if __name__ == f"__main__":
     # print(f" Get the minio client: {s3_obj.get_minio_client()}")
     minio_logger.info(f" Get the minio client: {s3_obj.get_minio_client()}")
 
-    output_data = s3_obj.load_file_paths(
-        local_path=bc.DATA_PATH,
-        bucket_name=bc.s3_raw_bucket,
-        minio_path=f'inputs')
-    minio_logger.info(f"\nFile status: {output_data}")
+    # output_data = s3_obj.load_file_paths(
+    #     local_path=bc.DATA_PATH,
+    #     bucket_name=bc.s3_raw_bucket,
+    #     minio_path=f'inputs')
+    # minio_logger.info(f"\nFile status: {output_data}")
+
+    # objects = s3_obj.list_minio_objects(bucket_name=bc.s3_comp_bucket)
+    # for i in objects:
+    #     print(i.bucket_name, i.object_name, i.last_modified)
+
+    check_path = f"input"  # 'inputs/sprint_results.parquet'
+    if s3_obj.is_empty_object(bucket_name=bc.s3_comp_bucket, obj_name=check_path):
+        print(f"The path {check_path} is not empty in {bc.s3_comp_bucket}")
+    else:
+        print(f"This is an empty object/prefix or is yet to be created")
+
+    # s3_obj.create_minio_bucket(f"test-bucket")
+    # s3_obj.delete_minio_bucket(f"test-bucket")
+    # val = s3_obj.is_valid_bucket_name(f"a" * 64)
+    # print(f"Validation result: {val}")
