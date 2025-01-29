@@ -73,9 +73,16 @@ class HudiTableManager:
         else:
             df.write.format('hudi').options(**hudi_write_options).mode('append').save(target_path)
 
-    def read_hudi_table(self, target_path, snap_view="Y"):
-        if snap_view:
-            return self.spark.read.format("hudi").option("hoodie.datasource.query.type", "snapshot").load(target_path)
+    def read_hudi_table(self, target_path, query_type="snap", query_ts=None):
+        if query_type == f"snap":
+            return self.spark.read.format("hudi")\
+                .option("hoodie.datasource.query.type", "snapshot")\
+                .load(target_path)
+        elif query_type == f"incr":
+            return self.spark.read.format("hudi")\
+                .option("hoodie.datasource.query.type", "incremental")\
+                .option("hoodie.datasource.read.begin.instanttime", query_ts)\
+                .load(target_path)
         else:
             return self.spark.read.format("hudi").load(target_path)
 
@@ -132,7 +139,7 @@ if __name__ == f"__main__":
     # delete_marker
     # spark_sess.sql(f"CALL run_")
     print(f"Table after compaction! - 'F74DF9549B504A6B'")
-    cp_df = hudi_manager.read_hudi_table(tgt_path, "Y")
+    cp_df = hudi_manager.read_hudi_table(tgt_path, "time", "20250126162059363")
     cp_df.createOrReplaceTempView("bikeshare_comp")
     # spark_sess.sql(f"""SELECT * FROM bikeshare_comp WHERE ride_id = 'F74DF9549B504A6B' """).show()
     spark_sess.sql(f"SELECT * FROM bikeshare_comp WHERE ride_id = 'F74DF9549B504A6B' ").show()
